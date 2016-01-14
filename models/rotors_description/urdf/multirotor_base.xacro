@@ -20,10 +20,72 @@
 -->
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Constants for robot dimensions -->
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:property name="mass0" value="0.001" /> <!-- mass link 0 -->
+  <xacro:property name="mass1" value="0.01" /> <!-- mass link 1 -->
+  <xacro:property name="mass2" value="0.163" /> <!-- mass link 2 -->
+  <xacro:property name="mass3" value="0.093" /> <!-- mass link 3 -->
+  <xacro:property name="mass4" value="0.102" /> <!-- mass link 4 -->
+<!--   <xacro:property name="masss" value="0.02" /> mass pinza lato sinistro - ferma -->
+  <xacro:property name="massd" value="0.0135" /> <!-- mass pinza lato destro - mobile , valori foto*2.7-->
+  <xacro:property name="width" value="0.026" /> <!-- 026 Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="height0" value="0.5" /> <!-- 0.005  Link 0 -->
+  <xacro:property name="height1" value="0.05" /> <!-- Link 1 -->
+  <xacro:property name="height2" value="0.19585" /> <!-- Link 2 -->
+  <xacro:property name="height3" value="0.063" /> <!-- Link 3, la parte 1 -->
+  <xacro:property name="height32" value="0.021" /> <!-- Link 3, la parte 2 -->
+  <xacro:property name="height4" value="0.067" /> <!-- Link 4 -->
+  <xacro:property name="heights" value="0.048" /> <!-- Link pinza lato sinistro -->
+  <xacro:property name="heightd" value="0.048" /> <!-- Link pinza lato destro -->
+  <xacro:property name="heights2" value="0.048" /> <!-- Link pinza lato sinistro parte curva -->
+  <xacro:property name="heightd2" value="0.048" /> <!-- 0.066 - Link pinza lato destro parte curva -->
+  <xacro:property name="spessorepinza" value="0.004" /> <!-- Square dimensions (widthxwidth) of beams -->
+  <xacro:property name="axel_offset" value="0.005" /> <!-- Space btw top of beam and the each joint -->
+
   <!-- Main multirotor link -->
   <xacro:macro name="multirotor_base_macro"
     params="robot_namespace mass body_width body_height mesh_file mesh_scale color *inertia">
     <link name="base_link"></link>
+
+  <!-- connetti il braccio
+  <xacro:include filename="$(find rrbot_description)/urdf/rrbot.xacro" />
+ -->
+
+  <link name="link0">
+    <collision>
+      <origin xyz="0 0 ${height0/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${width} ${height0}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 ${height0/2}" rpy="0 0 0"/>
+      <geometry>
+	<box size="${width} ${width} ${height0}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+
+    <inertial>
+      <origin xyz="0 0 ${height0/2}" rpy="0 0 0"/>
+      <mass value="${mass0}"/>
+      <inertia
+	  ixx="${mass0 / 12.0 * (width*width + height0*height0)}" ixy="0.0" ixz="0.0"
+	  iyy="${mass0 / 12.0 * (height0*height0 + width*width)}" iyz="0.0"
+	  izz="${mass0 / 12.0 * (width*width + width*width)}"/>
+    </inertial>
+  </link>
+
+  <joint name="joint0" type="fixed">
+    <parent link="base_link"/>
+    <child link="link0"/>
+    <origin xyz="0 0 0" rpy="${PI} 0 0"/>
+    <dynamics damping="0"/>
+  </joint>
+
 
     <joint name="base_joint" type="fixed">
       <origin xyz="0 0 0" rpy="0 0 0" />
